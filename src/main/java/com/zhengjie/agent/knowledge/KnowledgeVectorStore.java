@@ -19,9 +19,8 @@ public class KnowledgeVectorStore {
         long vecRowId;
         try (Connection conn = SQLiteUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(insertVecSQL, Statement.RETURN_GENERATED_KEYS)) {
-            // 将 float[] 转换为 byte[] (sqlite-vec 期望 BLOB 格式，但也可以通过 JSON? 查看文档)
-            // sqlite-vec 的插入方式：直接传入 BLOB 或 字符串? 根据官方文档，需要先将 float 数组转为字节数组
-            byte[] vecBytes = floatArrayToByteArray(embedding);
+            // 将 float[] 转换为 byte[]（小端序，sqlite-vec 在 x86 上需要）
+            byte[] vecBytes = EmbeddingUtil.floatArrayToBytes(embedding);
             pstmt.setBytes(1, vecBytes);
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -41,15 +40,6 @@ public class KnowledgeVectorStore {
             pstmt.setLong(3, vecRowId);
             pstmt.executeUpdate();
         }
-    }
-
-    // 辅助：float[] 转 byte[]
-    private static byte[] floatArrayToByteArray(float[] floats) {
-        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(floats.length * 4);
-        for (float f : floats) {
-            buffer.putFloat(f);
-        }
-        return buffer.array();
     }
 
     // 如果需要存储分块后的多个片段

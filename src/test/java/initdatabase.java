@@ -13,7 +13,7 @@ class initdatabase {
     void initDB() {
         try (Connection conn = SQLiteUtil.getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_vec USING vec0(embedding float[384])");
+            stmt.execute("CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_vec USING vec0(embedding float[1024])");
             stmt.execute("CREATE TABLE IF NOT EXISTS knowledge_meta (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "content TEXT NOT NULL," +

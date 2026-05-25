@@ -7,6 +7,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OllamaClient - Ollama大模型API客户端工具类
@@ -26,8 +27,12 @@ public class OllamaClient {
     /** 默认使用的模型名称 */
     private static final String MODEL = "deepseek-r1:7b";
 
-    /** OkHttp客户端实例，用于发送HTTP请求 */
-    private static final OkHttpClient client = new OkHttpClient();
+    /** OkHttp客户端实例（超时 2 分钟，大模型推理需要较长时间） */
+    private static final OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build();
 
     /** Jackson ObjectMapper实例，用于JSON序列化与反序列化 */
     private static final ObjectMapper mapper = new ObjectMapper();

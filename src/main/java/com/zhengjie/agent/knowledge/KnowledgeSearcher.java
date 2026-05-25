@@ -14,7 +14,7 @@ public class KnowledgeSearcher {
     // 检索最相似的 topK 个文本块
     public static List<String> search(String query, int topK) throws Exception {
         float[] queryVec = EmbeddingUtil.getEmbedding(query);
-        byte[] queryBytes = floatArrayToByteArray(queryVec);
+        byte[] queryBytes = EmbeddingUtil.floatArrayToBytes(queryVec);
 
         String sql = """
             SELECT m.content, m.source, v.distance
@@ -44,14 +44,5 @@ public class KnowledgeSearcher {
             }
         }
         return results;
-    }
-
-    // 复用 float[] to byte[]
-    private static byte[] floatArrayToByteArray(float[] floats) {
-        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(floats.length * 4);
-        for (float f : floats) {
-            buffer.putFloat(f);
-        }
-        return buffer.array();
     }
 }
